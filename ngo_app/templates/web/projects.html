@@ -1,0 +1,44 @@
+{% extends "web/base.html" %}
+{% load static %}
+{% block title %}Projects{% endblock %}
+
+{% block content %}
+<section class="page-header" style="background:linear-gradient(135deg,#1a3c5e,#4a90d9);padding:80px 0;text-align:center;color:#fff;">
+  <div class="container">
+    <h2>Projects</h2>
+    <ul class="list-unstyled d-flex justify-content-center gap-2 mt-2">
+      <li><a href="{% url 'home' %}" class="text-white">Home</a></li>
+      <li class="text-white"> / </li>
+      <li class="text-white">Projects</li>
+    </ul>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row">
+      {% if donation_data %}
+      {% for don in donation_data %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          {% if don.donation_img %}
+          <img src="/media/donation/{{ don.donation_img }}" class="card-img-top" alt="{{ don.donation_name }}" style="height:220px;object-fit:cover;">
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ don.donation_name }}</h5>
+            <p class="card-text text-muted flex-grow-1">{{ don.description|truncatewords:20|safe }}</p>
+            <a href="{% url 'donation_details_id' don.id %}" class="btn btn-primary btn-sm mt-2">Support Now</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <div class="text-center py-5 col-12">
+        <i class="fa fa-folder-open fa-4x text-muted mb-3 d-block"></i>
+        <h4 class="text-muted">No Projects Found</h4>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

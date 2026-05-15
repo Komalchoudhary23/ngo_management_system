@@ -1,0 +1,94 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ form_type }} Event{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="row">
+    <div class="col-sm-6"><h4 class="m-b-0">{{ form_type }} Event</h4></div>
+    <div class="col-sm-6 text-end">
+      <a href="{% url 'list_events' %}" class="btn btn-primary btn-sm">List Events</a>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-body">
+        <form id="add_edit_events" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="{{ form_type }}">
+          <input type="hidden" name="events_id" value="{% if form_type == 'Edit' and events_data %}{{ events_data.0.id }}{% endif %}">
+          <div class="row">
+            <div class="col-sm-6 mb-3">
+              <label>Event Name *</label>
+              <input type="text" class="form-control" name="events_name" required
+                value="{% if form_type == 'Edit' and events_data %}{{ events_data.0.events_name }}{% endif %}" placeholder="Event Name">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label>Short Description *</label>
+              <textarea class="form-control" name="about_events" rows="4" placeholder="About Event" required>{% if form_type == 'Edit' and events_data %}{{ events_data.0.about_events }}{% endif %}</textarea>
+            </div>
+            <div class="col-md-12 mb-3">
+              <label>Full Content *</label>
+              <textarea class="form-control" name="events_content" rows="6" placeholder="Event Content" required>{% if form_type == 'Edit' and events_data %}{{ events_data.0.events_content }}{% endif %}</textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6 mb-3">
+              <label>Banner Image {% if form_type == 'Add' %}*{% endif %}</label>
+              {% if form_type == 'Edit' and events_data %}
+                <div id="change_banner"><img src="/media/events/{{ events_data.0.events_banner_img }}" height="50" class="me-2"><a href="#" onclick="document.getElementById('banner_wrap').style.display='block';this.parentNode.style.display='none';">Change</a></div>
+                <div id="banner_wrap" style="display:none;"><input type="file" class="form-control" name="events_banner_photo"></div>
+                <input type="hidden" name="events_banner_recent_photo" value="{{ events_data.0.events_banner_img }}">
+              {% else %}
+                <input type="file" class="form-control" name="events_banner_photo" required>
+                <input type="hidden" name="events_banner_recent_photo" value="">
+              {% endif %}
+            </div>
+            <div class="col-sm-6 mb-3">
+              <label>Event Image {% if form_type == 'Add' %}*{% endif %}</label>
+              {% if form_type == 'Edit' and events_data %}
+                <div id="change_img"><img src="/media/events/{{ events_data.0.events_img }}" height="50" class="me-2"><a href="#" onclick="document.getElementById('img_wrap').style.display='block';this.parentNode.style.display='none';">Change</a></div>
+                <div id="img_wrap" style="display:none;"><input type="file" class="form-control" name="events_photo"></div>
+                <input type="hidden" name="events_recent_photo" value="{{ events_data.0.events_img }}">
+              {% else %}
+                <input type="file" class="form-control" name="events_photo" required>
+                <input type="hidden" name="events_recent_photo" value="">
+              {% endif %}
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col">
+              <button type="submit" class="btn btn-secondary me-3">Save</button>
+              <a href="{% url 'list_events' %}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+var _submitting = false;
+$("#add_edit_events").on("submit", function(e){
+    if (_submitting) return;
+    _submitting = true;
+  e.preventDefault();
+  $.ajax({
+    url: "{% url 'insert_events_data' %}",
+    type: "POST",
+    data: new FormData(this),
+    processData: false, contentType: false,
+    success: function(data){
+      if(data.status){ Swal.fire("Success", data.msg, "success").then(function(){ window.location="{% url 'list_events' %}"; }); }
+      else { Swal.fire("Error", data.msg, "error"); }
+    }
+  });
+});
+</script>
+{% endblock %}

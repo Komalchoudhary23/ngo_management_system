@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+staticfiles/
+
+# Media uploads (don't push user uploaded files)
+assets/uploads/
+
+# Environment
+.env
+venv/
+env/
+
+# Windows
+Thumbs.db
+Desktop.ini

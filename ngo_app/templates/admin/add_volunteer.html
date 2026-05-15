@@ -1,0 +1,46 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ form_type }} Volunteer{% endblock %}
+{% block content %}
+<div class="page-header"><div class="row">
+  <div class="col-sm-6"><h4 class="m-b-0">{{ form_type }} Volunteer</h4></div>
+  <div class="col-sm-6 text-end"><a href="{% url 'list_volunteer' %}" class="btn btn-primary btn-sm">List Volunteers</a></div>
+</div></div>
+<div class="row"><div class="col-sm-12"><div class="card"><div class="card-body">
+<form id="add_edit_volunteer" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="hidden" name="form_type" value="{{ form_type }}">
+  <input type="hidden" name="volunteer_id" value="{% if form_type == 'Edit' and volunteer_data %}{{ volunteer_data.0.id }}{% endif %}">
+  <div class="row">
+    <div class="col mb-3">
+      <label>Volunteer Name *</label>
+      <input type="text" class="form-control" name="volunteer_name" required
+        value="{% if form_type == 'Edit' and volunteer_data %}{{ volunteer_data.0.volunteer_name }}{% endif %}" placeholder="Volunteer Name">
+    </div>
+    <div class="col-sm-12 mb-3">
+      <label>Volunteer Photo *</label>
+      {% if form_type == 'Edit' and volunteer_data %}
+        <div id="cp"><img src="/media/volunteer/{{ volunteer_data.0.volunteer_img }}" height="50" class="me-2"><a href="#" onclick="document.getElementById('pw').style.display='block';this.parentNode.style.display='none';">Change</a></div>
+        <div id="pw" style="display:none;"><input type="file" class="form-control" name="volunteer_photo"></div>
+        <input type="hidden" name="volunteer_recent_photo" value="{{ volunteer_data.0.volunteer_img }}">
+      {% else %}
+        <input type="file" class="form-control" name="volunteer_photo" required>
+        <input type="hidden" name="volunteer_recent_photo" value="">
+      {% endif %}
+    </div>
+  </div>
+  <button type="submit" class="btn btn-secondary me-3">Save</button>
+  <a href="{% url 'list_volunteer' %}" class="btn btn-outline-secondary">Cancel</a>
+</form>
+</div></div></div></div>
+{% endblock %}
+{% block extra_js %}<script>
+var _submitting = false;
+$("#add_edit_volunteer").on("submit",function(e){
+    if (_submitting) return;
+    _submitting = true;
+  e.preventDefault();
+  $.ajax({url:"{% url 'insert_volunteer_data' %}",type:"POST",data:new FormData(this),processData:false,contentType:false,
+    success:function(d){ if(d.status){ Swal.fire("Success",d.msg,"success").then(function(){ window.location="{% url 'list_volunteer' %}"; }); } else { Swal.fire("Error",d.msg,"error"); } }
+  });
+});
+</script>{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "web/base.html" %}
+{% load static %}
+{% block title %}{{ title|default:"Volunteer" }}{% endblock %}
+
+{% block content %}
+<section class="page-header" style="background:linear-gradient(135deg,#1a3c5e,#4a90d9);padding:80px 0;text-align:center;color:#fff;">
+  <div class="container">
+    <h2>Volunteer</h2>
+    <ul class="list-unstyled d-flex justify-content-center gap-2 mt-2">
+      <li><a href="{% url 'home' %}" class="text-white">Home</a></li>
+      <li class="text-white"> / </li>
+      <li class="text-white">Volunteer</li>
+    </ul>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    {% if volunteer_data %}
+    <div class="row">
+      {% for v in volunteer_data %}
+      <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card text-center h-100 shadow-sm">
+          {% if v.volunteer_img %}
+          <img src="/media/volunteer/{{ v.volunteer_img }}" class="card-img-top rounded-circle mx-auto mt-4"
+               alt="{{ v.volunteer_name }}" style="width:120px;height:120px;object-fit:cover;">
+          {% else %}
+          <div class="rounded-circle bg-secondary mx-auto mt-4 d-flex align-items-center justify-content-center"
+               style="width:120px;height:120px;">
+            <i class="fa fa-user fa-3x text-white"></i>
+          </div>
+          {% endif %}
+          <div class="card-body">
+            <h6 class="card-title">{{ v.volunteer_name }}</h6>
+            <span class="badge bg-success">Volunteer</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <i class="fa fa-users fa-4x text-muted mb-3 d-block"></i>
+      <h4 class="text-muted">No Volunteers Found</h4>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Join as Volunteer CTA -->
+<section class="py-5 bg-primary text-white text-center">
+  <div class="container">
+    <h2>Want to Make a Difference?</h2>
+    <p class="lead">Join our team of volunteers and help us create a better world.</p>
+    <a href="{% url 'contact' %}" class="btn btn-light btn-lg mt-3">Get in Touch</a>
+  </div>
+</section>
+{% endblock %}

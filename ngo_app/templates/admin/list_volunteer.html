@@ -1,0 +1,33 @@
+{% extends "admin/base.html" %}
+{% block title %}Volunteers{% endblock %}
+{% block content %}
+<div class="page-header"><div class="row">
+  <div class="col-sm-6"><h4 class="m-b-0">Volunteers</h4></div>
+  <div class="col-sm-6 text-end"><a href="{% url 'add_volunteer' %}" class="btn btn-primary btn-sm">Add Volunteer</a></div>
+</div></div>
+<div class="row"><div class="col-sm-12"><div class="card"><div class="card-body">
+  <div class="table-responsive">
+    <table class="display" id="basic-1">
+      <thead><tr><th>#</th><th>Name</th><th>Photo</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for obj in volunteer_data %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ obj.volunteer_name }}</td>
+          <td><img src="/media/volunteer/{{ obj.volunteer_img }}" height="60" width="60" style="border-radius:50%;object-fit:cover;"></td>
+          <td>{% if obj.status == '1' %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-danger">Inactive</span>{% endif %}</td>
+          <td>
+            <a href="#" onclick="del_v({ % obj.id % });" class="btn btn-danger btn-sm"><i data-feather="trash-2"></i></a>
+            <a href="{% url 'edit_volunteer' obj.id %}" class="btn btn-primary btn-sm"><i data-feather="edit"></i></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div></div></div></div>
+{% endblock %}
+{% block extra_js %}<script>
+$(document).ready(function(){ if(!$.fn.DataTable.isDataTable('#basic-1')) $('#basic-1').DataTable(); feather.replace(); });
+function del_v(id){ Swal.fire({title:'Delete?',icon:'warning',showCancelButton:true,confirmButtonColor:'#d33'}).then(function(r){ if(r.isConfirmed){ $.post("{% url 'delete_volunteer' %}",{volunteer_id:id},function(d){ if(d.result=='true') location.reload(); }); } }); }
+</script>{% endblock %}

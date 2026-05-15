@@ -1,0 +1,109 @@
+{% extends "web/base.html" %}
+{% block title %}Saverahamara | Home{% endblock %}
+
+{% block content %}
+
+<!-- Banner / Slider -->
+{% if banner_data %}
+<section class="banner-section">
+    <div id="heroBanner" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% for banner in banner_data %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="/media/banner/{{ banner.banner_img }}" class="d-block w-100" alt="{{ banner.banner_name }}"
+                     style="height:500px;object-fit:cover;">
+                <div class="carousel-caption">
+                    <h2>{{ banner.banner_name }}</h2>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroBanner" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroBanner" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+</section>
+{% endif %}
+
+<!-- Donations Section -->
+{% if donation_data %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Our Causes</h2>
+        <div class="row">
+            {% for donation in donation_data %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    {% if donation.donation_img %}
+                    <img src="/media/donation/{{ donation.donation_img }}" class="card-img-top" alt="{{ donation.donation_name }}"
+                         style="height:200px;object-fit:cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ donation.donation_name }}</h5>
+                        <p class="card-text">{{ donation.description|truncatewords:20 }}</p>
+                        <a href="{% url 'donation_details_id' donation.id %}" class="btn btn-primary btn-sm">Donate Now</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Events Section -->
+{% if events_data %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4">Latest Events</h2>
+        <div class="row">
+            {% for event in events_data %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    {% if event.events_img %}
+                    <img src="/media/events/{{ event.events_img }}" class="card-img-top" alt="{{ event.events_name }}"
+                         style="height:200px;object-fit:cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ event.events_name }}</h5>
+                        <p class="card-text">{{ event.about_events|truncatewords:20 }}</p>
+                        <a href="{% url 'event_details_id' event.id %}" class="btn btn-outline-primary btn-sm">Read More</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Testimonials Section -->
+{% if testimonial_data %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">What People Say</h2>
+        <div class="row">
+            {% for t in testimonial_data %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center p-3">
+                    {% if t.testimonial_img %}
+                    <img src="/media/testimonial/{{ t.testimonial_img }}" class="rounded-circle mx-auto"
+                         style="width:80px;height:80px;object-fit:cover;" alt="{{ t.testimonial_name }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <p class="card-text fst-italic">"{{ t.description }}"</p>
+                        <h6>{{ t.testimonial_name }}</h6>
+                        <small class="text-muted">{{ t.occupation }}</small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

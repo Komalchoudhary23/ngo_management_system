@@ -1,0 +1,85 @@
+{% extends "admin/base.html" %}
+{% block title %}Banners{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-header-left">
+        <h4>Banner List</h4>
+    </div>
+    <div class="page-header-right ms-auto">
+        <a href="{% url 'add_banner' %}" class="btn btn-primary">+ Add Banner</a>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="display datatable" id="bannerTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Image</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for banner in banner_data %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ banner.banner_name }}</td>
+                                    <td>
+                                        {% if banner.banner_img %}
+                                            <img src="/media/banner/{{ banner.banner_img }}" style="height:60px;width:90px;object-fit:cover;" alt="">
+                                        {% else %}
+                                            <span class="text-muted">No Image</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if banner.status == '1' %}badge-light-success{% else %}badge-light-danger{% endif %}">
+                                            {% if banner.status == '1' %}Active{% else %}Inactive{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'edit_banner' banner.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                        <button class="btn btn-sm btn-outline-danger delete-btn" data-id="{{ banner.id }}">Delete</button>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="5" class="text-center">No banners found.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('#bannerTable').DataTable();
+
+    $(document).on('click', '.delete-btn', function() {
+        const id = $(this).data('id');
+        Swal.fire({
+            title: 'Are you sure?', text: "This banner will be deleted.", icon: 'warning',
+            showCancelButton: true, confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.post('{% url "delete_banner" %}', { banner_id: id }, function(res) {
+                    location.reload();
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

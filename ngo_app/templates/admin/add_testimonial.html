@@ -1,0 +1,55 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ form_type }} Testimonial{% endblock %}
+{% block content %}
+<div class="page-header"><div class="row">
+  <div class="col-sm-6"><h4 class="m-b-0">{{ form_type }} Testimonial</h4></div>
+  <div class="col-sm-6 text-end"><a href="{% url 'list_testimonial' %}" class="btn btn-primary btn-sm">List Testimonials</a></div>
+</div></div>
+<div class="row"><div class="col-sm-12"><div class="card"><div class="card-body">
+<form id="add_edit_testimonial" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="hidden" name="form_type" value="{{ form_type }}">
+  <input type="hidden" name="testimonial_id" value="{% if form_type == 'Edit' and testimonial_data %}{{ testimonial_data.0.id }}{% endif %}">
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label>Name *</label>
+      <input type="text" class="form-control" name="testimonial_name" required
+        value="{% if form_type == 'Edit' and testimonial_data %}{{ testimonial_data.0.testimonial_name }}{% endif %}" placeholder="Name">
+    </div>
+    <div class="col-md-6 mb-3">
+      <label>Occupation *</label>
+      <input type="text" class="form-control" name="occupation" required
+        value="{% if form_type == 'Edit' and testimonial_data %}{{ testimonial_data.0.occupation }}{% endif %}" placeholder="Occupation">
+    </div>
+    <div class="col-md-12 mb-3">
+      <label>Description *</label>
+      <textarea class="form-control" name="description" rows="4">{% if form_type == 'Edit' and testimonial_data %}{{ testimonial_data.0.description }}{% endif %}</textarea>
+    </div>
+    <div class="col-sm-12 mb-3">
+      <label>Photo *</label>
+      {% if form_type == 'Edit' and testimonial_data %}
+        <div id="cp"><img src="/media/testimonial/{{ testimonial_data.0.testimonial_img }}" height="50" class="me-2"><a href="#" onclick="document.getElementById('pw').style.display='block';this.parentNode.style.display='none';">Change</a></div>
+        <div id="pw" style="display:none;"><input type="file" class="form-control" name="testimonial_photo"></div>
+        <input type="hidden" name="testimonial_recent_photo" value="{{ testimonial_data.0.testimonial_img }}">
+      {% else %}
+        <input type="file" class="form-control" name="testimonial_photo" required>
+        <input type="hidden" name="testimonial_recent_photo" value="">
+      {% endif %}
+    </div>
+  </div>
+  <button type="submit" class="btn btn-secondary me-3">Save</button>
+  <a href="{% url 'list_testimonial' %}" class="btn btn-outline-secondary">Cancel</a>
+</form>
+</div></div></div></div>
+{% endblock %}
+{% block extra_js %}<script>
+var _submitting = false;
+$("#add_edit_testimonial").on("submit",function(e){
+    if (_submitting) return;
+    _submitting = true;
+  e.preventDefault();
+  $.ajax({url:"{% url 'insert_testimonial_data' %}",type:"POST",data:new FormData(this),processData:false,contentType:false,
+    success:function(d){ if(d.status){ Swal.fire("Success",d.msg,"success").then(function(){ window.location="{% url 'list_testimonial' %}"; }); } else { Swal.fire("Error",d.msg,"error"); } }
+  });
+});
+</script>{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "admin/base.html" %}
+{% block title %}Testimonials{% endblock %}
+{% block content %}
+<div class="page-header"><div class="row">
+  <div class="col-sm-6"><h4 class="m-b-0">Testimonials</h4></div>
+  <div class="col-sm-6 text-end"><a href="{% url 'add_testimonial' %}" class="btn btn-primary btn-sm">Add Testimonial</a></div>
+</div></div>
+<div class="row"><div class="col-sm-12"><div class="card"><div class="card-body">
+  <div class="table-responsive">
+    <table class="display" id="basic-1">
+      <thead><tr><th>#</th><th>Name</th><th>Photo</th><th>Occupation</th><th>Description</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for obj in testimonial_data %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ obj.testimonial_name }}</td>
+          <td><img src="/media/testimonial/{{ obj.testimonial_img }}" height="55" width="55" style="border-radius:50%;object-fit:cover;"></td>
+          <td>{{ obj.occupation }}</td>
+          <td>{{ obj.description|truncatewords:12|safe }}</td>
+          <td>{% if obj.status == '1' %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-danger">Inactive</span>{% endif %}</td>
+          <td>
+            <a href="#" onclick="del_t({{ obj.id }});" class="btn btn-danger btn-sm"><i data-feather="trash-2"></i></a>
+            <a href="{% url 'edit_testimonial' obj.id %}" class="btn btn-primary btn-sm"><i data-feather="edit"></i></a>
+            <a href="#" onclick="upd_t({{ obj.id }});" class="btn btn-warning btn-sm"><i data-feather="toggle-left"></i></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div></div></div></div>
+{% endblock %}
+{% block extra_js %}<script>
+$(document).ready(function(){ if(!$.fn.DataTable.isDataTable('#basic-1')) $('#basic-1').DataTable(); feather.replace(); });
+function del_t(id){ Swal.fire({title:'Delete?',icon:'warning',showCancelButton:true,confirmButtonColor:'#d33'}).then(function(r){ if(r.isConfirmed){ $.post("{% url 'delete_testimonial' %}",{testimonial_id:id},function(d){ if(d.result=='true') location.reload(); }); } }); }
+function upd_t(id){ $.post("{% url 'update_testimonial_status' %}",{testimonial_id:id},function(d){ if(d.result=='true') location.reload(); }); }
+</script>{% endblock %}

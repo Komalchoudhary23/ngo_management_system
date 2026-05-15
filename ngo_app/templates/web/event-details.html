@@ -1,0 +1,49 @@
+{% extends "web/base.html" %}
+{% load static %}
+{% block title %}{{ title|default:"Event Details" }}{% endblock %}
+
+{% block content %}
+<section class="page-header" style="background:linear-gradient(135deg,#1a3c5e,#4a90d9);padding:80px 0;text-align:center;color:#fff;">
+  <div class="container">
+    <h2>Event Details</h2>
+    <ul class="list-unstyled d-flex justify-content-center gap-2 mt-2">
+      <li><a href="{% url 'home' %}" class="text-white">Home</a></li>
+      <li class="text-white"> / </li>
+      <li><a href="{% url 'web_events' %}" class="text-white">Events</a></li>
+      <li class="text-white"> / </li>
+      <li class="text-white">Details</li>
+    </ul>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    {% if event %}
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        {% if event.events_banner_img %}
+        <img src="/media/events/{{ event.events_banner_img }}" alt="{{ event.events_name }}" class="img-fluid rounded shadow mb-4 w-100" style="max-height:400px;object-fit:cover;">
+        {% endif %}
+        <h2 class="mb-3">{{ event.events_name }}</h2>
+        <div class="mb-4">
+          <h5>About This Event</h5>
+          <p>{{ event.about_events|safe }}</p>
+        </div>
+        {% if event.events_content %}
+        <div class="mb-4">
+          <h5>Event Details</h5>
+          <div>{{ event.events_content|safe }}</div>
+        </div>
+        {% endif %}
+        <a href="{% url 'web_events' %}" class="btn btn-outline-primary">← Back to Events</a>
+      </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <h4 class="text-muted">Event not found</h4>
+      <a href="{% url 'web_events' %}" class="btn btn-primary mt-3">Back to Events</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

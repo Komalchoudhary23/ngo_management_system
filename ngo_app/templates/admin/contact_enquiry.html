@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+{% block title %}Contact Enquiries{% endblock %}
+{% block content %}
+<div class="page-header"><h4 class="m-b-0">Contact Enquiries</h4></div>
+<div class="row"><div class="col-sm-12"><div class="card"><div class="card-body">
+  <div class="table-responsive">
+    <table class="display" id="basic-1">
+      <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Message</th><th>Date</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for obj in contact_enquiry_data %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ obj.name }}</td>
+          <td>{{ obj.email }}</td>
+          <td>{{ obj.phone }}</td>
+          <td>{{ obj.message|truncatewords:15 }}</td>
+          <td>{{ obj.created_date }}</td>
+          <td><a href="#" onclick="del_ce({ obj.id });" class="btn btn-danger btn-sm"><i data-feather="trash-2"></i></a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div></div></div></div>
+{% endblock %}
+{% block extra_js %}<script>
+$(document).ready(function(){ if(!$.fn.DataTable.isDataTable('#basic-1')) $('#basic-1').DataTable(); feather.replace(); });
+function del_ce(id){ Swal.fire({title:'Delete?',icon:'warning',showCancelButton:true,confirmButtonColor:'#d33'}).then(function(r){ if(r.isConfirmed){ $.post("{% url 'delete_contact_enquiry' %}",{contact_enquiry_id:id},function(d){ if(d.result=='true') location.reload(); }); } }); }
+</script>{% endblock %}

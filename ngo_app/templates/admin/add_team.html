@@ -1,0 +1,39 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ form_type }} Team Member{% endblock %}
+{% block content %}
+<div class="page-header"><div class="row">
+  <div class="col-sm-6"><h4 class="m-b-0">{{ form_type }} Team Member</h4></div>
+  <div class="col-sm-6 text-end"><a href="{% url 'list_team' %}" class="btn btn-primary btn-sm">List Team</a></div>
+</div></div>
+<div class="row"><div class="col-sm-12"><div class="card"><div class="card-body">
+<form id="add_edit_team" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="hidden" name="form_type" value="{{ form_type }}">
+  <input type="hidden" name="team_id" value="{% if form_type == 'Edit' and team_data %}{{ team_data.0.id }}{% endif %}">
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label>Name *</label>
+      <input type="text" class="form-control" name="name" required
+        value="{% if form_type == 'Edit' and team_data %}{{ team_data.0.name }}{% endif %}" placeholder="Name">
+    </div>
+    <div class="col-md-6 mb-3">
+      <label>Designation *</label>
+      <input type="text" class="form-control" name="designation"
+        value="{% if form_type == 'Edit' and team_data %}{{ team_data.0.designation }}{% endif %}" placeholder="Designation">
+    </div>
+    <div class="col-sm-12 mb-3">
+      <label>Photo *</label>
+      {% if form_type == 'Edit' and team_data %}
+        <div id="cp"><img src="/media/team/{{ team_data.0.photo }}" height="50" class="me-2"><a href="#" onclick="document.getElementById('pw').style.display='block';this.parentNode.style.display='none';">Change</a></div>
+        <div id="pw" style="display:none;"><input type="file" class="form-control" name="photo"></div>
+        <input type="hidden" name="team_recent_photo" value="{{ team_data.0.photo }}">
+      {% else %}
+        <input type="file" class="form-control" name="photo" required>
+        <input type="hidden" name="team_recent_photo" value="">
+      {% endif %}
+    </div>
+  </div>
+  <button type="submit" class="btn btn-secondary me-3">Save</button>
+</form>
+</div></div></div></div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "web/base.html" %}
+{% load static %}
+{% block title %}{{ title|default:"Donation Details" }}{% endblock %}
+
+{% block content %}
+<section class="page-header" style="background:linear-gradient(135deg,#1a3c5e,#4a90d9);padding:80px 0;text-align:center;color:#fff;">
+  <div class="container">
+    <h2>Donation Details</h2>
+    <ul class="list-unstyled d-flex justify-content-center gap-2 mt-2">
+      <li><a href="{% url 'home' %}" class="text-white">Home</a></li>
+      <li class="text-white"> / </li>
+      <li><a href="{% url 'web_donation' %}" class="text-white">Donation</a></li>
+      <li class="text-white"> / </li>
+      <li class="text-white">Details</li>
+    </ul>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    {% if donation %}
+    <div class="row">
+      <div class="col-lg-6 mb-4">
+        {% if donation.donation_img %}
+        <img src="/media/donation/{{ donation.donation_img }}" alt="{{ donation.donation_name }}" class="img-fluid rounded shadow">
+        {% endif %}
+      </div>
+      <div class="col-lg-6">
+        <h2 class="mb-3">{{ donation.donation_name }}</h2>
+        <div class="mb-4">{{ donation.description|safe }}</div>
+
+        <!-- Donation Enquiry Form -->
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Make a Donation</h5>
+          </div>
+          <div class="card-body">
+            <form id="donation_form">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label class="form-label">Your Name *</label>
+                <input type="text" class="form-control" name="name" id="don_name" placeholder="Your Name" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Phone Number *</label>
+                <input type="text" class="form-control" name="phone" id="don_phone" placeholder="Phone Number" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email Address</label>
+                <input type="email" class="form-control" name="email" id="don_email" placeholder="Email Address">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Payment Receipt Image</label>
+                <input type="file" class="form-control" name="image" id="don_image" accept="image/*">
+                <small class="text-muted">Upload payment receipt screenshot</small>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Submit Donation</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <h4 class="text-muted">Cause not found</h4>
+      <a href="{% url 'web_donation' %}" class="btn btn-primary mt-3">Back to Donations</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$("#donation_form").on("submit", function(e){
+  e.preventDefault();
+  var fd = new FormData(this);
+  $.ajax({
+    url: "{% url 'insert_donation_enquiry' %}",
+    type: "POST",
+    data: fd,
+    processData: false,
+    contentType: false,
+    success: function(data){
+      if(data.status){
+        alert(data.msg);
+        $("#donation_form")[0].reset();
+      } else {
+        alert("Error: " + data.msg);
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

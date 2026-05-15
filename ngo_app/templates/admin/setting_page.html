@@ -1,0 +1,99 @@
+{% extends "admin/base.html" %}
+{% block title %}Website Settings{% endblock %}
+{% block content %}
+<div class="page-header"><h4 class="m-b-0">Website Settings</h4></div>
+<div class="row"><div class="col-sm-12"><div class="card"><div class="card-body">
+<form id="edit_setting_page" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% with s=setting_page_data.first %}
+  <div class="row" style="border:1px solid #e7e7e7;padding:2%;">
+    <div class="col-sm-12 mb-3">
+      <label>Website Title</label>
+      <input type="text" class="form-control" name="website_title" value="{{ s.website_title|default:'' }}" placeholder="Website Title">
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label>Email Address</label>
+      <input type="text" class="form-control" name="email1" value="{{ s.email1|default:'' }}" placeholder="Email">
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label>Alternative Email</label>
+      <input type="text" class="form-control" name="email2" value="{{ s.email2|default:'' }}" placeholder="Alt Email">
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label>Phone Number</label>
+      <input type="text" class="form-control" name="phone1" value="{{ s.phone1|default:'' }}" placeholder="Phone">
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label>Whatsapp Number</label>
+      <input type="text" class="form-control" name="phone2" value="{{ s.phone2|default:'' }}" placeholder="Whatsapp">
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label>Facebook Link</label>
+      <input type="text" class="form-control" name="fb_link" value="{{ s.fb_link|default:'' }}" placeholder="Facebook URL">
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label>Twitter Link</label>
+      <input type="text" class="form-control" name="twitter_link" value="{{ s.twitter_link|default:'' }}" placeholder="Twitter URL">
+    </div>
+    <div class="col-sm-4 mb-3">
+      <label>YouTube / Pinterest Link</label>
+      <input type="text" class="form-control" name="youtube_link" value="{{ s.youtube_link|default:'' }}" placeholder="YouTube URL">
+    </div>
+    <div class="col-sm-4 mb-3">
+      <label>LinkedIn Link</label>
+      <input type="text" class="form-control" name="linkdin_link" value="{{ s.linkdin_link|default:'' }}" placeholder="LinkedIn URL">
+    </div>
+    <div class="col-sm-4 mb-3">
+      <label>Instagram Link</label>
+      <input type="text" class="form-control" name="instagram_link" value="{{ s.instagram_link|default:'' }}" placeholder="Instagram URL">
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label>Meta Keywords</label>
+      <textarea class="form-control" name="website_meta_keyword" rows="5" placeholder="Keywords">{{ s.website_meta_keyword|default:'' }}</textarea>
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label>Meta Description</label>
+      <textarea class="form-control" name="website_meta_desc" rows="5" placeholder="Description">{{ s.website_meta_desc|default:'' }}</textarea>
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label>Google Analytics Script</label>
+      <textarea class="form-control" name="gtag" rows="5" placeholder="GA Script">{{ s.gtag|default:'' }}</textarea>
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label>Facebook Analytics Script</label>
+      <textarea class="form-control" name="facebook_anylatics" rows="5" placeholder="FB Script">{{ s.facebook_anylatics|default:'' }}</textarea>
+    </div>
+    <div class="col-sm-12 mb-3">
+      <label>Address</label>
+      <textarea class="form-control" name="website_address" rows="3" placeholder="Address">{{ s.website_address|default:'' }}</textarea>
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label>Website Logo</label>
+      {% if s.website_logo %}
+        <div id="cp"><img src="/media/web/{{ s.website_logo }}" height="60" class="me-2"><a href="#" onclick="document.getElementById('pw').style.display='block';this.parentNode.style.display='none';">Change</a></div>
+        <div id="pw" style="display:none;"><input type="file" class="form-control" name="website_logo"></div>
+        <input type="hidden" name="website_logo_recent_photo" value="{{ s.website_logo }}">
+      {% else %}
+        <input type="file" class="form-control" name="website_logo">
+        <input type="hidden" name="website_logo_recent_photo" value="">
+      {% endif %}
+    </div>
+  </div>
+  {% endwith %}
+  <div class="mt-3">
+    <button type="submit" class="btn btn-secondary me-3">Save</button>
+  </div>
+</form>
+</div></div></div></div>
+{% endblock %}
+{% block extra_js %}<script>
+var _submitting = false;
+$("#edit_setting_page").on("submit",function(e){
+    if (_submitting) return;
+    _submitting = true;
+  e.preventDefault();
+  $.ajax({url:"{% url 'insert_setting_page_data' %}",type:"POST",data:new FormData(this),processData:false,contentType:false,
+    success:function(d){ if(d.status){ Swal.fire("Success",d.msg,"success"); } else { Swal.fire("Error",d.msg,"error"); } }
+  });
+});
+</script>{% endblock %}

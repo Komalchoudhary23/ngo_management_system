@@ -1,0 +1,66 @@
+{% extends "web/base.html" %}
+{% block title %}Saverahamara | Contact{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Contact Us</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <div id="formMsg" class="alert d-none"></div>
+                        <form id="contactForm">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Your Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" name="phone">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Message</label>
+                                <textarea class="form-control" name="message" rows="5"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function getCookie(name) {
+    let val = null;
+    document.cookie.split(';').forEach(c => {
+        c = c.trim();
+        if (c.startsWith(name + '=')) val = decodeURIComponent(c.slice(name.length + 1));
+    });
+    return val;
+}
+$('#contactForm').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: '{% url "insert_contact_enquiry_data" %}',
+        method: 'POST',
+        data: $(this).serialize(),
+        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+        success: function(res) {
+            const msg = $('#formMsg');
+            msg.removeClass('d-none alert-danger').addClass('alert-success').text(res.msg);
+            if (res.status) $('#contactForm')[0].reset();
+        }
+    });
+});
+</script>
+{% endblock %}

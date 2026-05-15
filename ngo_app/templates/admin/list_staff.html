@@ -1,0 +1,38 @@
+{% extends "admin/base.html" %}
+{% block title %}Staff{% endblock %}
+{% block content %}
+<div class="page-header"><div class="row">
+  <div class="col-sm-6"><h4 class="m-b-0">Staff</h4></div>
+  <div class="col-sm-6 text-end"><a href="{% url 'add_staff' %}" class="btn btn-primary btn-sm">Add Staff</a></div>
+</div></div>
+<div class="row"><div class="col-sm-12"><div class="card"><div class="card-body">
+  <div class="table-responsive">
+    <table class="display" id="basic-1">
+      <thead><tr><th>#</th><th>Photo</th><th>Name</th><th>Email</th><th>Mobile</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for obj in staff_data %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td><img src="/media/users/{{ obj.photo }}" height="50" width="50" style="border-radius:50%;object-fit:cover;"></td>
+          <td>{{ obj.name }}</td>
+          <td>{{ obj.email_id }}</td>
+          <td>{{ obj.mobile_no }}</td>
+          <td>{{ obj.rolename }}</td>
+          <td>{% if obj.status == '1' %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-danger">Inactive</span>{% endif %}</td>
+          <td>
+            <a href="#" onclick="del_s({{ obj.user_id }});" class="btn btn-danger btn-sm"><i data-feather="trash-2"></i></a>
+            <a href="{% url 'edit_staff' obj.user_id %}" class="btn btn-primary btn-sm"><i data-feather="edit"></i></a>
+            <a href="#" onclick="upd_s({{ obj.user_id }});" class="btn btn-warning btn-sm"><i data-feather="toggle-left"></i></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div></div></div></div>
+{% endblock %}
+{% block extra_js %}<script>
+$(document).ready(function(){ if(!$.fn.DataTable.isDataTable('#basic-1')) $('#basic-1').DataTable(); feather.replace(); });
+function del_s(id){ Swal.fire({title:'Delete?',icon:'warning',showCancelButton:true,confirmButtonColor:'#d33'}).then(function(r){ if(r.isConfirmed){ $.post("{% url 'delete_staff' %}",{staff_id:id},function(d){ if(d.result=='true') location.reload(); }); } }); }
+function upd_s(id){ $.post("{% url 'update_staff_status' %}",{staff_id:id},function(d){ if(d.result=='true') location.reload(); }); }
+</script>{% endblock %}

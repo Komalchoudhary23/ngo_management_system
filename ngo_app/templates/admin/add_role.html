@@ -1,0 +1,58 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ form_type }} Role{% endblock %}
+{% block content %}
+<div class="page-header"><div class="row">
+  <div class="col-sm-6"><h4 class="m-b-0">{{ form_type }} Role</h4></div>
+  <div class="col-sm-6 text-end"><a href="{% url 'list_role' %}" class="btn btn-primary btn-sm">List Roles</a></div>
+</div></div>
+<form id="permission_form" method="post">
+{% csrf_token %}
+<input type="hidden" name="form_type" value="{{ form_type }}">
+<input type="hidden" name="role_id" value="{% if form_type == 'Edit' and role_data %}{{ role_data.0.id }}{% endif %}">
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card"><div class="card-body">
+      <div class="row">
+        <div class="col-sm-6 mb-3">
+          <label>Role Name *</label>
+          <input type="text" class="form-control" name="role_name" required
+            value="{% if form_type == 'Edit' and role_data %}{{ role_data.0.name }}{% endif %}" placeholder="Role Name">
+        </div>
+      </div>
+    </div></div>
+  </div>
+  {% for pt in permission_type_data %}
+  <div class="col-md-6">
+    <div class="card"><div class="card-header pb-0"><h5>{{ pt.view_name|title }}</h5></div>
+    <div class="card-body animate-chk">
+      <div class="row"><div class="col">
+        {% for p in pt.permission_data %}
+        <label class="d-block">
+          <input type="checkbox" class="checkbox_animated" name="permissions" value="{{ p.id }}"
+            {% if p.id|stringformat:"s" in access_data %}checked{% endif %}>
+          {{ p.name|title }}
+        </label>
+        {% endfor %}
+      </div></div>
+    </div></div>
+  </div>
+  {% endfor %}
+</div>
+<div class="row mt-3"><div class="col">
+  <button type="submit" class="btn btn-secondary me-3">Save</button>
+  <a href="{% url 'list_role' %}" class="btn btn-outline-secondary">Cancel</a>
+</div></div>
+</form>
+{% endblock %}
+{% block extra_js %}<script>
+var _submitting = false;
+$("#permission_form").on("submit",function(e){
+    if (_submitting) return;
+    _submitting = true;
+  e.preventDefault();
+  var fd = new FormData(this);
+  $.ajax({url:"{% url 'insert_permission' %}",type:"POST",data:fd,processData:false,contentType:false,
+    success:function(d){ if(d.status){ Swal.fire("Success",d.msg,"success").then(function(){ window.location="{% url 'list_role' %}"; }); } else { Swal.fire("Error",d.msg,"error"); } }
+  });
+});
+</script>{% endblock %}

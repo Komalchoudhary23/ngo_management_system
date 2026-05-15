@@ -1,0 +1,73 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ form_type }} Staff{% endblock %}
+{% block content %}
+<div class="page-header"><div class="row">
+  <div class="col-sm-6"><h4 class="m-b-0">{{ form_type }} Staff</h4></div>
+  <div class="col-sm-6 text-end"><a href="{% url 'list_staff' %}" class="btn btn-primary btn-sm">List Staff</a></div>
+</div></div>
+<div class="row"><div class="col-sm-12"><div class="card"><div class="card-body">
+<form id="add_edit_staff" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="hidden" name="form_type" value="{{ form_type }}">
+  <input type="hidden" name="staff_id" value="{% if form_type == 'Edit' and staff_data %}{{ staff_data.0.user_id }}{% endif %}">
+  <div class="row">
+    <div class="col-sm-4 mb-3">
+      <label>User Name *</label>
+      <input type="text" class="form-control" name="name" required
+        value="{% if form_type == 'Edit' and staff_data %}{{ staff_data.0.name }}{% endif %}" placeholder="User Name">
+    </div>
+    <div class="col-sm-4 mb-3">
+      <label>Email Address *</label>
+      <input type="email" class="form-control" name="email_id" required
+        value="{% if form_type == 'Edit' and staff_data %}{{ staff_data.0.email_id }}{% endif %}" placeholder="Email">
+    </div>
+    <div class="col-sm-4 mb-3">
+      <label>Mobile Number</label>
+      <input type="text" class="form-control" name="mobile_no"
+        value="{% if form_type == 'Edit' and staff_data %}{{ staff_data.0.mobile_no }}{% endif %}" placeholder="Mobile">
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label>Access Role</label>
+      <select class="form-select" name="role_id">
+        {% for r in role_data %}
+        <option value="{{ r.id }}" {% if form_type == 'Edit' and staff_data and staff_data.0.role_id == r.id %}selected{% endif %}>{{ r.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label>Password *</label>
+      <input type="text" class="form-control" name="password" required
+        value="{% if form_type == 'Edit' and staff_data %}{{ staff_data.0.password }}{% endif %}" placeholder="Password">
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label>Address</label>
+      <textarea class="form-control" name="address" rows="3">{% if form_type == 'Edit' and staff_data %}{{ staff_data.0.address }}{% endif %}</textarea>
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label>Staff Photo</label>
+      {% if form_type == 'Edit' and staff_data %}
+        <div id="cp"><img src="/media/users/{{ staff_data.0.photo }}" height="50" class="me-2"><a href="#" onclick="document.getElementById('pw').style.display='block';this.parentNode.style.display='none';">Change</a></div>
+        <div id="pw" style="display:none;"><input type="file" class="form-control" name="photo"></div>
+        <input type="hidden" name="staff_recent_photo" value="{{ staff_data.0.photo }}">
+      {% else %}
+        <input type="file" class="form-control" name="photo">
+        <input type="hidden" name="staff_recent_photo" value="">
+      {% endif %}
+    </div>
+  </div>
+  <button type="submit" class="btn btn-secondary me-3">Save</button>
+  <a href="{% url 'list_staff' %}" class="btn btn-outline-secondary">Cancel</a>
+</form>
+</div></div></div></div>
+{% endblock %}
+{% block extra_js %}<script>
+var _submitting = false;
+$("#add_edit_staff").on("submit",function(e){
+    if (_submitting) return;
+    _submitting = true;
+  e.preventDefault();
+  $.ajax({url:"{% url 'insert_staff_data' %}",type:"POST",data:new FormData(this),processData:false,contentType:false,
+    success:function(d){ if(d.status){ Swal.fire("Success",d.msg,"success").then(function(){ window.location="{% url 'list_staff' %}"; }); } else { Swal.fire("Error",d.msg,"error"); } }
+  });
+});
+</script>{% endblock %}

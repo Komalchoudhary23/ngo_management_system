@@ -1,0 +1,88 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ form_type }} Donation{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="row">
+    <div class="col-sm-6"><h4 class="m-b-0">{{ form_type }} Donation</h4></div>
+    <div class="col-sm-6 text-end">
+      <a href="{% url 'list_donation' %}" class="btn btn-primary btn-sm">List Donations</a>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-body">
+        <form name="add_edit_donation" id="add_edit_donation" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" id="form_type" value="{{ form_type }}">
+          <input type="hidden" name="donation_id" id="donation_id" value="{% if form_type == 'Edit' and donation_data %}{{ donation_data.0.id }}{% endif %}">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label>Donation Name *</label>
+              <input type="text" class="form-control" name="donation_name" id="donation_name"
+                value="{% if form_type == 'Edit' and donation_data %}{{ donation_data.0.donation_name }}{% endif %}"
+                placeholder="Donation Name" required>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label>Description *</label>
+              <textarea class="form-control" name="description" id="description" rows="5" placeholder="Description">{% if form_type == 'Edit' and donation_data %}{{ donation_data.0.description }}{% endif %}</textarea>
+            </div>
+            <div class="col-sm-12 mb-3">
+              <label>Donation Image Upload *</label>
+              {% if form_type == 'Edit' and donation_data %}
+                <div id="change_photo">
+                  <img src="/media/donation/{{ donation_data.0.donation_img }}" height="50" class="me-2">
+                  <a href="#" onclick="document.getElementById('photo_wrapper').style.display='block';document.getElementById('change_photo').style.display='none';">Change Photo</a>
+                </div>
+                <div id="photo_wrapper" style="display:none;">
+                  <input type="file" class="form-control" name="donation_photo" id="donation_photo">
+                </div>
+                <input type="hidden" name="donation_recent_photo" value="{{ donation_data.0.donation_img }}">
+              {% else %}
+                <input type="file" class="form-control" name="donation_photo" id="donation_photo" required>
+                <input type="hidden" name="donation_recent_photo" value="">
+              {% endif %}
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col">
+              <button type="submit" class="btn btn-secondary me-3">Save</button>
+              <a href="{% url 'list_donation' %}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+var _submitting = false;
+$("#add_edit_donation").on("submit", function(e){
+    if (_submitting) return;
+    _submitting = true;
+  e.preventDefault();
+  var fd = new FormData(this);
+  $.ajax({
+    url: "{% url 'insert_donation_data' %}",
+    type: "POST",
+    data: fd,
+    processData: false,
+    contentType: false,
+    success: function(data){
+      if(data.status){
+        Swal.fire("Success", data.msg, "success").then(function(){ window.location = "{% url 'list_donation' %}"; });
+      } else {
+        Swal.fire("Error", data.msg, "error");
+      }
+    }
+  });
+});
+</script>
+{% endblock %}
