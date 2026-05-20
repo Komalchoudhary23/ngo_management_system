@@ -10,10 +10,6 @@ A full-stack **NGO Management System** developed using **Django (Python)** for m
 - [Features](#features)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
-- [Configuration](#configuration)
-- [URL Reference](#url-reference)
-- [Production Deployment](#production-deployment)
-- [Security Roadmap](#security-roadmap)
 
 ---
 
